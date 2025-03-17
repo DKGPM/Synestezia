@@ -1,3 +1,42 @@
+// server.js (Node.js + Express + WebSocket)
+const express = require("express");
+const http = require("http");
+const WebSocket = require("ws");
+
+const app = express();
+const server = http.createServer(app);
+const wss = new WebSocket.Server({ server });
+
+let visitCount = 0;
+
+wss.on("connection", (ws) => {
+    ws.send(JSON.stringify({ type: "visitCount", count: visitCount }));
+
+    ws.on("message", (message) => {
+        wss.clients.forEach(client => {
+            if (client.readyState === WebSocket.OPEN) {
+                client.send(message);
+            }
+        });
+    });
+});
+
+app.use(express.static("public"));
+
+app.get("/visit", (req, res) => {
+    visitCount++;
+    wss.clients.forEach(client => {
+        if (client.readyState === WebSocket.OPEN) {
+            client.send(JSON.stringify({ type: "visitCount", count: visitCount }));
+        }
+    });
+    res.json({ count: visitCount });
+});
+
+server.listen(3000, () => console.log("Server beží na porte 3000"));
+
+// chat_forum.html (kompletná verzia s WebSocket podporou)
+const htmlContent = `
 <!DOCTYPE html>
 <html lang="sk">
 <head>
@@ -37,16 +76,6 @@
             color: white;
             cursor: pointer;
         }
-        .links {
-            margin-top: 20px;
-        }
-        .counter {
-            margin-top: 10px;
-            font-weight: bold;
-        }
-        .back-link {
-            margin-top: 20px;
-        }
     </style>
 </head>
 <body>
@@ -63,66 +92,39 @@
         <input type="text" id="username" placeholder="Zadajte svoje meno">
         <input type="text" id="message" placeholder="Napíšte správu">
         <button onclick="sendMessage()">Odoslať</button>
-        
-        <div class="links">
-            <h3>Odborné weby o synestézii</h3>
-            <ul>
-                <li><a href="https://www.mentem.sk/blog/9" target="_blank">Mentem.sk - Synestézia</a></li>
-                <li><a href="https://psychiatriepropraxi.cz/artkey/psy-201004-0005.php" target="_blank">Psychiatrie pro praxi - Synestézia</a></li>
-                <li><a href="https://ucjtk.ff.cuni.cz/veda-a-vyzkum/synestezie" target="_blank">Ústav českého jazyka - Synestézia</a></li>
-                <li><a href="https://www.nm.cz/navstivte-nas/pro-skoly/vidis-to-co-jini-nevidi-tajemstvi-synestezie" target="_blank">Národní muzeum - Tajomstvo synestézie</a></li>
-                <li><a href="https://www.tribune.cz/archiv/michani-smyslovych-vjemu-prinasi-prakticke-vyhody" target="_blank">Medical Tribune - Praktické výhody synestézie</a></li>
-            </ul>
-        </div>
-        
-        <div class="faq-link">
-            <a href="faq.html">Často kladené otázky (FAQ)</a>
-        </div>
-        
-        <div class="back-link">
-            <a href="index.html">← Späť na hlavnú stránku</a>
-        </div>
     </div>
 
     <script>
+        const socket = new WebSocket("ws://localhost:3000");
+
+        socket.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            if (data.type === "visitCount") {
+                document.getElementById("visit-count").innerText = data.count;
+            } else {
+                const chatBox = document.getElementById("chat-box");
+                const newMessage = document.createElement("p");
+                newMessage.innerHTML = `<strong>${data.username} [${data.topic}]:</strong> ${data.message}`;
+                chatBox.appendChild(newMessage);
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }
+        };
+
         function sendMessage() {
             const username = document.getElementById("username").value;
             const message = document.getElementById("message").value;
             const topic = document.getElementById("chat-topic").value;
             if (username && message) {
-                const chatBox = document.getElementById("chat-box");
-                const newMessage = document.createElement("p");
-                newMessage.innerHTML = `<strong>${username} [${topic}]:</strong> ${message}`;
-                chatBox.appendChild(newMessage);
+                socket.send(JSON.stringify({ username, message, topic }));
                 document.getElementById("message").value = "";
-                chatBox.scrollTop = chatBox.scrollHeight;
-                saveChat();
-                notifyUser();
             }
         }
 
-        function saveChat() {
-            localStorage.setItem("chatMessages", document.getElementById("chat-box").innerHTML);
-        }
-
-        function loadChat() {
-            document.getElementById("chat-box").innerHTML = localStorage.getItem("chatMessages") || "";
-        }
-
-        function notifyUser() {
-            alert("Nová správa bola pridaná do chatu!");
-        }
-
-        function updateVisitCount() {
-            let count = localStorage.getItem("visitCount") || 0;
-            count++;
-            localStorage.setItem("visitCount", count);
-            document.getElementById("visit-count").innerText = count;
-        }
-        
-        updateVisitCount();
-        loadChat();
+        document.addEventListener("DOMContentLoaded", () => {
+            fetch("/visit");
+        });
     </script>
 </body>
-</html>
+</html>`;
 
+module.exports = htmlContent;
