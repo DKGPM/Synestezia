@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kvíz o synestézii</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #a1c4fd, #c2e9fb);
+            text-align: center;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            background: #007bff;
+            color: white;
+            font-size: 16px;
+        }
+        .btn:hover {
+            background: #0056b3;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Kvíz o synestézii</h1>
+        <div id="question-container"></div>
+        <button id="next-btn" class="btn hidden">Ďalšia otázka</button>
+        <div id="result-container" class="hidden"></div>
+        <a href="navigacia.html" class="btn">Späť na hlavnú stránku</a>
+    </div>
+
+    <script>
+        const allQuestions = [
+            { question: "Čo je synestézia?", answers: [
+                { text: "Schopnosť vidieť do budúcnosti", correct: false },
+                { text: "Neurologický fenomén spájajúci zmysly", correct: true },
+                { text: "Porucha vnímania farieb", correct: false }
+            ]},
+            { question: "Ktorá forma synestézie je najčastejšia?", answers: [
+                { text: "Grafémovo-farebná", correct: true },
+                { text: "Chuťovo-sluchová", correct: false },
+                { text: "Číselná personifikácia", correct: false }
+            ]},
+            { question: "Koľko percent populácie zažíva synestéziu?", answers: [
+                { text: "10-15%", correct: false },
+                { text: "3-5%", correct: true },
+                { text: "Menej ako 1%", correct: false }
+            ]},
+            { question: "Aký vedec ako prvý opísal synestéziu?", answers: [
+                { text: "Isaac Newton", correct: false },
+                { text: "Francis Galton", correct: true },
+                { text: "Sigmund Freud", correct: false }
+            ]},
+            { question: "Ako sa synestézia diagnostikuje?", answers: [
+                { text: "MRI vyšetrením", correct: false },
+                { text: "Pomocou konzistentných testov asociácií", correct: true },
+                { text: "Zrakovým testom", correct: false }
+            ]},
+            { question: "Môže synestézia ovplyvniť učenie?", answers: [
+                { text: "Áno, môže pomôcť pri zapamätávaní informácií", correct: true },
+                { text: "Nie, nemá žiadny vplyv", correct: false },
+                { text: "Spôsobuje ťažkosti s učením", correct: false }
+            ]},
+            { question: "Je synestézia dedičná?", answers: [
+                { text: "Áno, môže sa dediť v rodinách", correct: true },
+                { text: "Nie, je vždy získaná", correct: false },
+                { text: "Je spôsobená len traumou", correct: false }
+            ]},
+            { question: "Ktorá známa osobnosť mala synestéziu?", answers: [
+                { text: "Nikola Tesla", correct: false },
+                { text: "Vincent van Gogh", correct: true },
+                { text: "Albert Einstein", correct: false }
+            ]},
+            { question: "Môže byť synestézia výhodná?", answers: [
+                { text: "Áno, môže zlepšiť kreativitu a pamäť", correct: true },
+                { text: "Nie, spôsobuje len zmätok", correct: false },
+                { text: "Nemá žiadne výhody", correct: false }
+            ]},
+            { question: "Aký hudobník bol známy tým, že zažíval synestéziu?", answers: [
+                { text: "Ludwig van Beethoven", correct: false },
+                { text: "Pharrell Williams", correct: true },
+                { text: "Wolfgang Amadeus Mozart", correct: false }
+            ]}
+        ];
+
+        function getRandomQuestions() {
+            return allQuestions.sort(() => 0.5 - Math.random()).slice(0, 10);
+        }
+
+        let questions = getRandomQuestions();
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let incorrectAnswers = [];
+
+        const questionContainer = document.getElementById("question-container");
+        const nextButton = document.getElementById("next-btn");
+        const resultContainer = document.getElementById("result-container");
+
+        function showQuestion() {
+            questionContainer.innerHTML = "";
+            let questionObj = questions[currentQuestionIndex];
+            let questionEl = document.createElement("h2");
+            questionEl.innerText = questionObj.question;
+            questionContainer.appendChild(questionEl);
+
+            questionObj.answers.forEach(answer => {
+                let button = document.createElement("button");
+                button.innerText = answer.text;
+                button.classList.add("btn");
+                button.onclick = () => selectAnswer(answer.correct, questionObj, answer.text);
+                questionContainer.appendChild(button);
+            });
+        }
+
+        function selectAnswer(correct, question, selectedAnswer) {
+            if (correct) {
+                score++;
+            } else {
+                incorrectAnswers.push({ question: question.question, selected: selectedAnswer, correct: question.answers.find(a => a.correct).text });
+            }
+            currentQuestionIndex++;
+            if (currentQuestionIndex < questions.length) {
+                showQuestion();
+            } else {
+                showResult();
+            }
+        }
+
+        function showResult() {
+    questionContainer.classList.add("hidden");
+    nextButton.classList.add("hidden");
+    resultContainer.classList.remove("hidden");
+    
+    let resultHTML = `<h2>Dosiahli ste ${score} z ${questions.length} bodov.</h2>`;
+    if (incorrectAnswers.length > 0) {
+        resultHTML += `<h3>Chybné odpovede:</h3><ul>`;
+        incorrectAnswers.forEach(item => {
+            resultHTML += `<li><strong>${item.question}</strong><br>Vaša odpoveď: ${item.selected}<br>Správna odpoveď: ${item.correct}</li>`;
+        });
+        resultHTML += `</ul>`;
+    }
+    resultContainer.innerHTML = resultHTML;
+}
+
+        showQuestion();
+    </script>
+</body>
+</html>

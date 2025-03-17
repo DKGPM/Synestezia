@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FAQ - Synestézia</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #56ccf2, #2f80ed);
+            text-align: center;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: left;
+        }
+        h1 {
+            text-align: center;
+        }
+        .faq-item {
+            margin-bottom: 15px;
+        }
+        .question {
+            font-weight: bold;
+            cursor: pointer;
+            color: #007bff;
+        }
+        .answer {
+            display: none;
+            padding-left: 10px;
+        }
+        .back-link {
+            margin-top: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Často kladené otázky (FAQ) - Synestézia</h1>
+        
+        <script>
+            const faqData = [
+                {q: "Čo je synestézia?", a: "Synestézia je neurologický jav, pri ktorom stimulácia jedného zmyslu automaticky vyvoláva zážitok v inom zmysle."},
+                {q: "Koľko ľudí má synestéziu?", a: "Približne 3-5 % populácie zažíva nejakú formu synestézie."},
+                {q: "Aké sú najbežnejšie formy synestézie?", a: "Najčastejšie formy sú grafémovo-farebná synestézia, chromestézia (počutie farieb) a lexikálno-gustatorická synestézia."},
+                {q: "Je synestézia dedičná?", a: "Áno, existujú dôkazy, že synestézia môže byť geneticky podmienená a dedí sa v rodinách."},
+                {q: "Ovplyvňuje synestézia každodenný život?", a: "Áno, synestéti často hovoria, že ich zážitky obohacujú ich vnímanie sveta, ale môžu byť aj rušivé."},
+                {q: "Môže synestézia zmiznúť?", a: "Niektorí synestéti uvádzajú, že ich synestetické vnímanie sa môže vekom meniť alebo oslabiť."},
+                {q: "Dá sa synestézia získať v priebehu života?", a: "Áno, niektoré prípady synestézie sa objavili po úrazoch mozgu alebo pod vplyvom drog."},
+                {q: "Ovplyvňuje synestézia kreativitu?", a: "Áno, mnoho synestétov je kreatívnych, najmä v oblasti hudby, umenia a literatúry."},
+                {q: "Existujú známi synestéti?", a: "Áno, synestéziu mali napríklad Vincent van Gogh, Pharrell Williams a Richard Feynman."},
+                {q: "Môže synestézia spôsobovať problémy?", a: "Väčšina synestétov ju vníma pozitívne, ale niektoré intenzívne formy môžu byť rušivé."},
+                {q: "Je synestézia porucha?", a: "Nie, synestézia sa nepovažuje za poruchu, ale za variant normálneho vnímania."},
+                {q: "Ako sa dá diagnostikovať synestézia?", a: "Existujú online testy, ktoré hodnotia konzistenciu synestetických zážitkov."},
+                {q: "Ovplyvňuje synestézia učenie?", a: "Niektorí synestéti tvrdia, že im pomáha lepšie si pamätať informácie."},
+                {q: "Má synestézia vplyv na emócie?", a: "Áno, niektoré synestetické zážitky môžu byť emočne intenzívne."},
+                {q: "Je možné synestéziu trénovať?", a: "Niektoré výskumy naznačujú, že opakované asociácie môžu vyvolať synestetické reakcie."},
+                {q: "Sú niektoré farby alebo zvuky v synestézii bežnejšie?", a: "Áno, napríklad písmeno 'A' býva často červené a 'C' modré."},
+                {q: "Ovplyvňuje synestézia spánok?", a: "Niektorí synestéti uvádzajú, že majú živšie sny."},
+                {q: "Dá sa synestézia liečiť?", a: "Nie je dôvod liečiť synestéziu, keďže nejde o poruchu."},
+                {q: "Ako reagujú ľudia na synestéziu?", a: "Mnohí ľudia, ktorí ju nemajú, si ju nevedia predstaviť, čo môže byť frustrujúce."},
+                {q: "Existujú rôzne typy synestézie v jednej osobe?", a: "Áno, niektorí ľudia majú viacero foriem synestézie naraz."},
+                {q: "Môže synestézia pomôcť v umení?", a: "Áno, synestetici často využívajú svoje vnímanie na tvorbu unikátneho umenia."},
+                {q: "Ovplyvňuje synestézia IQ?", a: "Nie sú dôkazy, že by synestézia priamo súvisela s inteligenciou."}
+            ];
+            document.write('<div>');
+            faqData.forEach((item, index) => {
+                document.write(`<div class='faq-item'><div class='question' onclick='toggleAnswer(${index})'>${item.q}</div>`);
+                document.write(`<div class='answer' id='answer${index}'>${item.a}</div></div>`);
+            });
+            document.write('</div>');
+        </script>
+        
+        <div class="back-link">
+            <a href="chat_forum.html">← Späť na chat fórum</a>
+        </div>
+    </div>
+
+    <script>
+        function toggleAnswer(index) {
+            let answer = document.getElementById("answer" + index);
+            answer.style.display = answer.style.display === "block" ? "none" : "block";
+        }
+    </script>
+</body>
+</html>
