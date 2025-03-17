@@ -85,34 +85,44 @@
     </div>
 
     <script>
-        const socket = new WebSocket("ws://localhost:3000");
-
-        socket.onmessage = (event) => {
-            const data = JSON.parse(event.data);
-            if (data.type === "visitCount") {
-                document.getElementById("visit-count").innerText = data.count;
-            } else {
-                const chatBox = document.getElementById("chat-box");
-                const newMessage = document.createElement("p");
-                newMessage.innerHTML = `<strong>${data.username} [${data.topic}]:</strong> ${data.message}`;
-                chatBox.appendChild(newMessage);
-                chatBox.scrollTop = chatBox.scrollHeight;
-            }
-        };
-
         function sendMessage() {
             const username = document.getElementById("username").value;
             const message = document.getElementById("message").value;
             const topic = document.getElementById("chat-topic").value;
             if (username && message) {
-                socket.send(JSON.stringify({ username, message, topic }));
+                const chatBox = document.getElementById("chat-box");
+                const newMessage = document.createElement("p");
+                newMessage.innerHTML = `<strong>${username} [${topic}]:</strong> ${message}`;
+                chatBox.appendChild(newMessage);
                 document.getElementById("message").value = "";
+                chatBox.scrollTop = chatBox.scrollHeight;
+                saveChat();
+                notifyUser();
             }
         }
 
-        document.addEventListener("DOMContentLoaded", () => {
-            fetch("/visit");
-        });
+        function saveChat() {
+            localStorage.setItem("chatMessages", document.getElementById("chat-box").innerHTML);
+        }
+
+        function loadChat() {
+            document.getElementById("chat-box").innerHTML = localStorage.getItem("chatMessages") || "";
+        }
+
+        function notifyUser() {
+            alert("Nová správa bola pridaná do chatu!");
+        }
+
+        function updateVisitCount() {
+            let count = localStorage.getItem("visitCount") || 0;
+            count++;
+            localStorage.setItem("visitCount", count);
+            document.getElementById("visit-count").innerText = count;
+        }
+        
+        updateVisitCount();
+        loadChat();
     </script>
 </body>
 </html>
+
